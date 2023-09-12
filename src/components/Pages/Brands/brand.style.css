@@ -1,0 +1,23 @@
+.createUser {
+  background-color: #faaca8;
+  background-image: linear-gradient(19deg, #faaca8 0%, #ddd6f3 100%);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 50px;
+  position: fixed;
+  bottom: 79%;
+  right: 5%;
+  font-weight: 700;
+  color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 64px;
+  width: 64px;
+  transform: rotate(0);
+  transition: 0.3s ease;
+  position: absolute;
+  translate: middle;
+  z-index: 2;
+}

@@ -1,0 +1,7 @@
+.custom-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    height: 100%; /* Esto asegura que el contenido ocupe toda la altura de la tarjeta */
+  }
