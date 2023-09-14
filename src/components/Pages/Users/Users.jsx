@@ -1,11 +1,14 @@
+import { PlusOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Table } from 'antd';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { CrudContext } from '../../Context/context';
 import ShopModal from '../../Modal/ModalShop';
 
 const Users = () => {
 
-    const { handleDelete, getItems, shop, setModal1Open } = useContext(CrudContext)
+    const [modal1Open, setModal1Open] = useState(false);
+    const [isEdit, setIsEdit] = useState("");
+    const { handleDelete, getItems, shop, getOneElement } = useContext(CrudContext)
 
 
     const columns = [
@@ -39,7 +42,9 @@ const Users = () => {
                         >
                             <Button className="styleDelete">Eliminar</Button>
                         </Popconfirm>
-                        <Button className="styleEdit" onClick={() => setModal1Open(true)}>
+                        <Button className="styleEdit"
+                            onClick={async () => { await getOneElement("users", record.id); setIsEdit("edit"); setModal1Open(true) }}
+                        >
                             Editar
                         </Button>
                     </div>
@@ -55,8 +60,18 @@ const Users = () => {
 
     return (
         <>
-
-            <ShopModal />
+            <Button
+                className="createUser"
+                htmlType="button"
+                onClick={() => { setModal1Open(true); setIsEdit("") }}
+            >
+                <PlusOutlined />
+            </Button>
+            <ShopModal
+                modal1Open={modal1Open}
+                setModal1Open={setModal1Open}
+                isEdit={isEdit}
+            />
             <Table
                 columns={columns}
                 dataSource={shop}

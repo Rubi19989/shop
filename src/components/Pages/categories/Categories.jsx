@@ -1,12 +1,15 @@
+import { PlusOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Table } from 'antd';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { CrudContext } from '../../Context/context';
 import BrandsAndCategoy from '../../Modal/BrandsAndCategoy.modal';
 import './category.style.css'
 
 const Categories = () => {
 
-    const { handleDelete, getItems, shop } = useContext(CrudContext);
+    const [modal1Open, setModal1Open] = useState(false);
+    const [isEdit, setIsEdit] = useState("");
+    const { handleDelete, getItems, shop, getOneElement } = useContext(CrudContext);
 
 
     const columns = [
@@ -41,7 +44,9 @@ const Categories = () => {
                         >
                             <Button className="styleDelete">Eliminar</Button>
                         </Popconfirm>
-                        <Button className="styleEdit">
+                        <Button className="styleEdit"
+                            onClick={async () => { await getOneElement("categories", record.id); setIsEdit("edit"); setModal1Open(true) }}
+                        >
                             Editar
                         </Button>
                     </div>
@@ -56,7 +61,20 @@ const Categories = () => {
 
     return (
         <>
-            <BrandsAndCategoy endPoint={'categories'} />
+            <Button
+                className="createUser"
+                htmlType="button"
+                onClick={() => { setModal1Open(true); setIsEdit("") }}
+            >
+                <PlusOutlined />
+            </Button>
+
+            <BrandsAndCategoy
+                endPoint={'categories'}
+                modal1Open={modal1Open}
+                setModal1Open={setModal1Open}
+                isEdit={isEdit}
+            />
             <Table
                 columns={columns}
                 dataSource={shop}

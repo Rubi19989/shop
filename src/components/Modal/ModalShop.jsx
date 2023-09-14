@@ -1,34 +1,38 @@
-import React, { useContext } from 'react';
-import { Button, Modal, Form, Input, } from 'antd';
+import React, { useContext, useEffect } from 'react';
+import { Button, Modal, Form, Input } from 'antd';
 import { CrudContext } from '../Context/context';
 import { PlusOutlined } from '@ant-design/icons';
 
-const ShopModal = () => {
+const ShopModal = ({ modal1Open, setModal1Open, isEdit }) => {
     const [form] = Form.useForm()
 
-    const { handleCreate, modal1Open, setModal1Open } = useContext(CrudContext);
+    const { handleCreate, oneData, oneDataId, setOneData, handleEdit } = useContext(CrudContext);
 
     const onFinish = (values) => {
-        console.log(values);
-        handleCreate("users", values);
+        if (isEdit === "edit") {
+            handleEdit("users", oneDataId, values);
+        } else {
+            handleCreate("users", values);
+        };
+        setModal1Open(false);
         form.resetFields();
-    }
+    };
+    useEffect(() => {
+        form.setFieldsValue(oneData)
+        setOneData("")
+    }, [oneData])
 
     return (
         <>
-                <Button
-                    className="createUser"
-                    htmlType="button"
-                    onClick={() => setModal1Open(true)}
-                >
-                    <PlusOutlined />
-                </Button>
+            
             <Modal
-                title="Crear"
+                forceRender
+                title={`${isEdit === "edit" ? "Editar" : "Crear"} ${'users'}`}
                 style={{ top: 20 }}
                 open={modal1Open}
+                okText={`${isEdit === "edit" ? "Editar" : "Crear"}`}
                 onOk={() => (setModal1Open(false), form.submit())}
-                onCancel={() => setModal1Open(false)}
+                onCancel={() => { setModal1Open(false); form.resetFields(); }}
             >
                 <Form
                     form={form}

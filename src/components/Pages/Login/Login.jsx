@@ -1,19 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Col, Row } from 'antd';
 import { Form, Input } from 'antd';
-import { Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './login.style.css';
-import shop from '../../../img/shop.jpg'
+import shopita from '../../../img/shop.jpg'
+import { api } from '../../API/api';
+import { Button } from 'react-bootstrap';
 
 const Login = () => {
 
-    const onFinish = (values) => {
+    const [postLogin, setPostLogin] = useState(null)
+    const navigate = useNavigate('/');
+    const [form] = Form.useForm();
+
+
+    const onFinish = async (values) => {
+        try {
+            const locura2 = { email: values.email, password: values.password };
+
+            const postApi = await api.post(`login/auth`, locura2)
+            setPostLogin(postApi.data)
+
+            if (postApi.status === 200) {
+                localStorage.setItem('user', postApi.data.data.token)
+
+                console.log('Inicio de sesión exitoso');
+                navigate("/")
+            } else {
+                console.error('Inicio de sesión fallido');
+            }
+
+            form.resetFields();
+
+        } catch (error) {
+            console.error('Error al iniciar sesión:', error);
+            form.resetFields();
+        }
         console.log('Success:', values);
     };
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
+
+
+
+
 
     return (
         <>
@@ -22,7 +54,7 @@ const Login = () => {
                 <Col>
                     <Card
                         className='d-flex cardShop'
-                        cover={<img src={shop} alt='esta es una imagen de una tienda'
+                        cover={<img src={shopita} alt='esta es una imagen de una tienda'
                             className='imagenShop' />}
                     >
                         <Card
@@ -37,6 +69,7 @@ const Login = () => {
 
 
                             <Form
+                                form={form}
                                 name="basic"
                                 layout='vertical'
                                 onFinish={onFinish}
@@ -55,7 +88,7 @@ const Login = () => {
                                         },
                                     ]}
                                 >
-                                    <Input className='p-3 inputColorLogin rounded-pill' />
+                                    <Input className='p-3  rounded-pill' />
                                 </Form.Item>
 
                                 <Form.Item
@@ -69,7 +102,7 @@ const Login = () => {
                                         },
                                     ]}
                                 >
-                                    <Input.Password className='p-3 inputColorLogin rounded-pill' />
+                                    <Input.Password className='p-3  rounded-pill' />
                                 </Form.Item>
 
 
@@ -79,11 +112,10 @@ const Login = () => {
 
                                 <Button
                                     className='text-center w-100 mt-3 bg-danger p-3 mt-5
-                                 rounded-pill border border-0'
+                                        rounded-pill border border-0'
                                     type="submit">
                                     Login
                                 </Button>
-
                             </Form>
                         </Card>
                     </Card>

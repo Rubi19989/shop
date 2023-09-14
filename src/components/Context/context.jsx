@@ -6,33 +6,58 @@ const CrudContext = createContext();
 const CrudProvider = ({ children }) => {
 
     const [shop, setShop] = useState(null);
-    const [modal1Open, setModal1Open] = useState(false);
+
+    const [oneData, setOneData] = useState("");
+    const [oneDataId, setOneDataId] = useState("");
 
 
+
+    const getOneElement = async (endPoint, id) => {
+        try {
+            const getInstance = await api.get(`${endPoint}/${id}/single`);
+            setOneData(getInstance.data.data);
+            setOneDataId(getInstance.data.data.id);
+        } catch (error) {
+            console.error(error);
+        };
+    };
 
     const getItems = async (locura) => {
-        const getApi = await api.get(`${locura}/`);
-        setShop(getApi.data.data);
+        try {
+            const getApi = await api.get(`${locura}/`);
+            setShop(getApi.data.data);
+        } catch (error) {
+            console.log('Hubo un error')
+        }
+
     }
 
     const handleDelete = async (endpoint, id) => {
-        const deleteCrud = await api.delete(`${endpoint}/${id}/delete/`);
-        await getItems(endpoint);
-        console.log(deleteCrud)
+        try {
+            const deleteCrud = await api.delete(`${endpoint}/${id}/delete/`);
+            await getItems(endpoint);
+            console.log(deleteCrud)
+        } catch (error) {
+            console.log('No se puede eliminar')
+        }
+
     }
 
     const handleEdit = async (putEdit, id, data) => {
-        const editCrud = await api.put(`${putEdit}/${id}/edit/`, data)
+        const editCrud = await api.put(`${putEdit}/${id}/update/`, data)
         await getItems(putEdit);
         console.log(editCrud)
+
+
     }
 
     const handleCreate = async (postCreate, data) => {
         const createShop = await api.post(`${postCreate}/create/`, data);
         await getItems(postCreate);
         console.log(createShop);
-    }
 
+
+    }
 
 
 
@@ -43,9 +68,11 @@ const CrudProvider = ({ children }) => {
         handleDelete,
         handleEdit,
         setShop,
+        getOneElement,
+        oneData,
+        setOneData,
+        oneDataId,
         handleCreate,
-        modal1Open,
-        setModal1Open
     }
 
     return (

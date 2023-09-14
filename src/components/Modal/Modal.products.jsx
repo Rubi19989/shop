@@ -1,37 +1,61 @@
-import React, { useContext, useState } from 'react';
-import { Button, Modal, Form, Input, } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+import { Modal, Form, Input, Select } from 'antd';
 import { CrudContext } from '../Context/context';
-import { PlusOutlined } from '@ant-design/icons';
+import { api } from '../API/api';
 
-const ModalProduct = () => {
+const ModalProduct = ({ modal1Open, setModal1Open, isEdit }) => {
 
     const [form] = Form.useForm()
+    const [usuarios, setUsuarios] = useState([])
+    const [categorias, setCategorias] = useState([])
+    const [brands, setBrands] = useState([])
 
-    const { handleCreate, modal1Open, setModal1Open } = useContext(CrudContext);
+    const { handleCreate, oneData, oneDataId, setOneData, handleEdit } = useContext(CrudContext);
+
+
+    const handleGet = async (endPoint) => {
+        const results = await api.get(`${endPoint}/`)
+        if (endPoint === 'brands') {
+            setBrands(results.data.data)
+        } else if (endPoint === 'users') {
+            setUsuarios(results.data.data)
+        } else if (endPoint === 'categories') {
+            setCategorias(results.data.data);
+        }
+    }
+
 
     const onFinish = (values) => {
-        console.log(values);
-        handleCreate(`${'products'}`, values);
+        if (isEdit === "edit") {
+            handleEdit(`products`, oneDataId, values);
+        } else {
+            handleCreate(`products`, values);
+        };
+        setModal1Open(false);
         form.resetFields();
-    }
+    };
+
+    useEffect(() => {
+        form.setFieldsValue(oneData)
+        setOneData("")
+        handleGet("users")
+        handleGet("brands")
+        handleGet("categories")
+    }, [oneData])
 
 
 
     return (
         <>
-            <Button
-                className="createUser"
-                htmlType="button"
-                onClick={() => setModal1Open(true)}
-            >
-                <PlusOutlined />
-            </Button>
+
             <Modal
-                title="Crear"
+                forceRender
+                title={`${isEdit === "edit" ? "Editar" : "Crear"} ${'products'}`}
                 style={{ top: 20 }}
                 open={modal1Open}
+                okText={`${isEdit === "edit" ? "Editar" : "Crear"}`}
                 onOk={() => (setModal1Open(false), form.submit())}
-                onCancel={() => setModal1Open(false)}
+                onCancel={() => { setModal1Open(false); form.resetFields(); }}
             >
                 <Form
                     form={form}
@@ -70,7 +94,7 @@ const ModalProduct = () => {
                     </Form.Item>
                     <Form.Item
                         className='mt-5'
-                        name="brand"
+                        name="brandId"
                         label="Brand"
                         rules={[
                             {
@@ -79,11 +103,27 @@ const ModalProduct = () => {
                             },
                         ]}
                     >
-                        <Input />
+                        <Select
+                            style={{
+                                width: '100%',
+                            }}
+                            placeholder="Brands"
+                            showSearch
+                            optionFilterProp='children'
+                        >
+                            {brands.map((item, index) => (
+                                <Select.Option
+                                    key={index}
+                                    value={item.id}
+                                >
+                                    {item.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                     <Form.Item
                         className='mt-5'
-                        name="category"
+                        name="categoryId"
                         label="Category"
                         rules={[
                             {
@@ -92,20 +132,52 @@ const ModalProduct = () => {
                             },
                         ]}
                     >
-                        <Input />
+                        <Select
+                            style={{
+                                width: '100%',
+                            }}
+                            showSearch
+                            optionFilterProp='children'
+                            placeholder="Categories"
+                        >
+                            {categorias.map((item, index) => (
+                                <Select.Option
+                                    key={index}
+                                    value={item.id}
+                                >
+                                    {item.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                     <Form.Item
                         className='mt-5'
-                        name="user"
-                        label="User"
+                        name="userId"
+                        label="Users"
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input your User!',
+                                message: 'Please input your Users!',
                             },
                         ]}
                     >
-                        <Input />
+                        <Select
+                            style={{
+                                width: '100%',
+                            }}
+                            showSearch
+                            optionFilterProp='children'
+                            placeholder="Users"
+                        >
+                            {usuarios.map((item, index) => (
+                                <Select.Option
+                                    key={index}
+                                    value={item.id}
+                                >
+                                    {item.email}
+                                </Select.Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                 </Form>
             </Modal>

@@ -1,13 +1,17 @@
 import { Button, Popconfirm, Table } from 'antd';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './brand.style.css'
 import { CrudContext } from '../../Context/context';
 import BrandsAndCategoy from '../../Modal/BrandsAndCategoy.modal';
+import { PlusOutlined } from '@ant-design/icons';
 
 const Brands = () => {
 
+    const [modal1Open, setModal1Open] = useState(false);
+    const [isEdit, setIsEdit] = useState("");
+    const { shop, getItems, handleDelete, getOneElement } = useContext(CrudContext)
 
-    const { shop, getItems, handleDelete } = useContext(CrudContext)
+
 
     const columns = [
         {
@@ -40,7 +44,8 @@ const Brands = () => {
                         >
                             <Button className="styleDelete">Eliminar</Button>
                         </Popconfirm>
-                        <Button className="styleEdit">
+                        <Button className="styleEdit"
+                            onClick={async () => { await getOneElement("brands", record.id); setIsEdit("edit"); setModal1Open(true) }}>
                             Editar
                         </Button>
                     </div>
@@ -56,8 +61,19 @@ const Brands = () => {
 
     return (
         <>
-
-            <BrandsAndCategoy endPoint={"brands"} />
+            <Button
+                className="createUser"
+                htmlType="button"
+                onClick={() => { setModal1Open(true); setIsEdit("") }}
+            >
+                <PlusOutlined />
+            </Button>
+            <BrandsAndCategoy
+                endPoint={"brands"}
+                modal1Open={modal1Open}
+                setModal1Open={setModal1Open}
+                isEdit={isEdit}
+            />
             <Table
                 columns={columns}
                 dataSource={shop}

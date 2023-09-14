@@ -1,36 +1,39 @@
-import React, { useContext, useState } from 'react';
-import { Button, Modal, Form, Input, } from 'antd';
+import React, { useContext, useEffect } from 'react';
+import { Modal, Form, Input, } from 'antd';
 import { CrudContext } from '../Context/context';
-import { PlusOutlined } from '@ant-design/icons';
 
-const BrandsAndCategoy = ({ endPoint }) => {
+const BrandsAndCategoy = ({ endPoint, modal1Open, setModal1Open, isEdit }) => {
 
     const [form] = Form.useForm()
 
-    const [modal1Open, setModal1Open] = useState(false);
-    const { handleCreate } = useContext(CrudContext);
+
+    const { handleCreate, oneData, oneDataId, setOneData, handleEdit } = useContext(CrudContext);
 
     const onFinish = (values) => {
-        console.log(values);
-        handleCreate(`${endPoint}`, values);
+        if (isEdit === "edit") {
+            handleEdit(`${endPoint}`, oneDataId, values);
+        } else {
+            handleCreate(`${endPoint}`, values);
+        };
+        setModal1Open(false);
         form.resetFields();
-    }
+    };
+    
+    useEffect(() => {
+        form.setFieldsValue(oneData)
+        setOneData("")
+    }, [oneData])
 
     return (
         <>
-            <Button
-                className="createUser"
-                htmlType="button"
-                onClick={() => setModal1Open(true)}
-            >
-                <PlusOutlined />
-            </Button>
             <Modal
-                title="Crear"
+                forceRender
+                title={`${isEdit === "edit" ? "Editar" : "Crear"} ${endPoint}`}
                 style={{ top: 20 }}
                 open={modal1Open}
+                okText={`${isEdit === "edit" ? "Editar" : "Crear"}`}
                 onOk={() => (setModal1Open(false), form.submit())}
-                onCancel={() => setModal1Open(false)}
+                onCancel={() => { setModal1Open(false); form.resetFields(); }}
             >
                 <Form
                     form={form}
@@ -38,6 +41,12 @@ const BrandsAndCategoy = ({ endPoint }) => {
                     onFinish={onFinish}
                     style={{
                         maxWidth: 600,
+                    }}
+                    initialValues={oneData === "" ? "" : oneData}
+                    onValuesChange={(_, allValues) => {
+                        if (oneData !== "") {
+                            setOneData(allValues);
+                        }
                     }}
                 >
                     <Form.Item
@@ -52,7 +61,10 @@ const BrandsAndCategoy = ({ endPoint }) => {
                             },
                         ]}
                     >
-                        <Input />
+                        <Input
+                            placeholder='Input name'
+                            className="p-2"
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

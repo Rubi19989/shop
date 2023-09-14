@@ -2,15 +2,31 @@ import React from 'react';
 import { Card, Col, Row } from 'antd';
 import { Form, Input } from 'antd';
 import { Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './register.style.css'
 import shopRegister from '../../../img/tienda.avif'
+import { api } from '../../API/api';
 
 const Register = () => {
 
+    const navigate = useNavigate('/')
+
+    const createItem = async (data) => {
+        try {
+            await api.post(`users/create`, data);
+        } catch (error) {
+            console.error(error);
+
+        };
+    };
+
     const onFinish = (values) => {
         console.log('Success:', values);
+        createItem(values);
+        navigate("/");
     };
+
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
