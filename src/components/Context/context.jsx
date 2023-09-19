@@ -36,7 +36,7 @@ const CrudProvider = ({ children }) => {
         try {
             const deleteCrud = await api.delete(`${endpoint}/${id}/delete/`);
             await getItems(endpoint);
-            console.log(deleteCrud)
+          
         } catch (error) {
             console.log('No se puede eliminar')
         }

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Card, Col, Row } from 'antd';
+import { Card, Col, Row, message } from 'antd';
 import { Form, Input } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.style.css';
 import shopita from '../../../img/shop.jpg'
 import { api } from '../../API/api';
 import { Button } from 'react-bootstrap';
+import jwtDecode from "jwt-decode";
+
 
 const Login = () => {
 
@@ -13,23 +15,28 @@ const Login = () => {
     const navigate = useNavigate('/');
     const [form] = Form.useForm();
 
+    const [messageApi, contextHolder] = message.useMessage();
+
 
     const onFinish = async (values) => {
         try {
-            const locura2 = { email: values.email, password: values.password };
+            const usuario = { email: values.email, password: values.password };
 
-            const postApi = await api.post(`login/auth`, locura2)
+
+            const postApi = await api.post(`login/auth`, usuario)
             setPostLogin(postApi.data)
 
             if (postApi.status === 200) {
                 localStorage.setItem('user', postApi.data.data.token)
+                const token = localStorage.getItem('user')
 
-                console.log('Inicio de sesión exitoso');
+                const decoded = jwtDecode(token);
+                localStorage.setItem('rols', JSON.stringify(decoded.roles))
                 navigate("/")
+
             } else {
                 console.error('Inicio de sesión fallido');
             }
-
             form.resetFields();
 
         } catch (error) {
@@ -43,12 +50,19 @@ const Login = () => {
         console.log('Failed:', errorInfo);
     };
 
-
+    const error = () => {
+        messageApi.open({
+            type: 'error',
+            content: 'Ingrese su Correo electronico y contraseña correctamente',
+        });
+    };
 
 
 
     return (
         <>
+            {contextHolder}
+
             <h1 className='text-center mt-3'>Shop Login</h1>
             <Row className='mt-5 d-flex justify-content-center'>
                 <Col>
@@ -106,11 +120,12 @@ const Login = () => {
                                 </Form.Item>
 
 
-                                <Link to={'/register'} className='text-dark'>
+                                <Link to={'/register'} className=' text-dark text-decoration-none'>
                                     Registrate
                                 </Link>
 
                                 <Button
+                                    onClick={error}
                                     className='text-center w-100 mt-3 bg-danger p-3 mt-5
                                         rounded-pill border border-0'
                                     type="submit">

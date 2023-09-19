@@ -31,6 +31,8 @@ const Register = () => {
         console.log('Failed:', errorInfo);
     };
 
+
+
     return (
         <>
             <h1 className='text-center mt-3'>Registrate en Shop</h1>
@@ -87,7 +89,7 @@ const Register = () => {
                                 </Form.Item>
 
 
-                                <Link to={'/login'} className='text-dark '>
+                                <Link to={'/login'} className='text-dark text-decoration-none'>
                                     Iniciar sesion
                                 </Link>
 
